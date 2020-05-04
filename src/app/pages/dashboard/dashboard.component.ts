@@ -1,116 +1,166 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
-import { takeWhile } from 'rxjs/operators' ;
+import { takeWhile } from 'rxjs/operators';
 import { SolarData } from '../../@core/data/solar';
-import { AbService } from '../../@core/utils/ab.service';
-import {MetadataService} from '../../@core/utils/metadata.service';
+import { Events } from '../../@data/events';
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 
 interface CardSettings {
-  title: string;
-  iconClass: string;
-  type: string;
+	title: string;
+	subTitle: string;
+	iconClass: string;
+	type: string;
 }
 
 @Component({
-  selector: 'ngx-dashboard',
-  styleUrls: ['./dashboard.component.scss'],
-  templateUrl: './dashboard.component.html',
+	selector: 'ngx-dashboard',
+	styleUrls: ['./dashboard.component.scss'],
+	templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnDestroy {
 
-  private alive = true;
-  showCallAction = true;
+	private alive = true;
 
-  solarValue: number;
-  lightCard: CardSettings = {
-    title: 'Light',
-    iconClass: 'nb-lightbulb',
-    type: 'primary',
-  };
-  rollerShadesCard: CardSettings = {
-    title: 'Roller Shades',
-    iconClass: 'nb-roller-shades',
-    type: 'success',
-  };
-  wirelessAudioCard: CardSettings = {
-    title: 'Wireless Audio',
-    iconClass: 'nb-audio',
-    type: 'info',
-  };
-  coffeeMakerCard: CardSettings = {
-    title: 'Coffee Maker',
-    iconClass: 'nb-coffee-maker',
-    type: 'warning',
-  };
+	projects: {};
 
-  statusCards: string;
+	allProjects: any[] = [];
 
-  commonStatusCardsSet: CardSettings[] = [
-    this.lightCard,
-    this.rollerShadesCard,
-    this.wirelessAudioCard,
-    this.coffeeMakerCard,
-  ];
+	solarValue: number;
+	projectsCard: CardSettings = {
+		title: '# 0',
+		subTitle: 'projects',
+		iconClass: 'nb-gear',
+		type: 'primary',
+	};
+	usersCard: CardSettings = {
+		title: '# 0',
+		subTitle: 'users',
+		iconClass: 'nb-lightbulb',
+		type: 'danger',
+	};
+	mergeRequestCard: CardSettings = {
+		title: '# 0',
+		subTitle: 'merge requests',
+		iconClass: 'nb-tables',
+		type: 'success',
+	};
+	discussionCard: CardSettings = {
+		title: '# 0',
+		subTitle: 'pending discussions',
+		iconClass: 'nb-paper-plane', // notifications
+		type: 'info',
+	};
+	// 'nb-tables',  'nb-snowy-circled', 'nb-power-circled', 'nb-grid-b-outline',
+	statusCards: string;
 
-  statusCardsByThemes: {
-    default: CardSettings[];
-    cosmic: CardSettings[];
-    corporate: CardSettings[];
-    dark: CardSettings[];
-    'material-dark': CardSettings[];
-    'material-light': CardSettings[];
-  } = {
-    default: this.commonStatusCardsSet,
-    cosmic: this.commonStatusCardsSet,
-    corporate: [
-      {
-        ...this.lightCard,
-        type: 'warning',
-      },
-      {
-        ...this.rollerShadesCard,
-        type: 'primary',
-      },
-      {
-        ...this.wirelessAudioCard,
-        type: 'danger',
-      },
-      {
-        ...this.coffeeMakerCard,
-        type: 'info',
-      },
-    ],
-    dark: this.commonStatusCardsSet,
-    'material-dark': this.commonStatusCardsSet,
-    'material-light': this.commonStatusCardsSet,
-  };
+	commonStatusCardsSet: CardSettings[] = [
+		this.projectsCard,
+		this.usersCard,
+		this.mergeRequestCard,
+		this.discussionCard,
+	];
 
-  constructor(private themeService: NbThemeService,
-              private metaDataService: MetadataService,
-              private solarService: SolarData,
-              private abService: AbService) {
-    this.themeService.getJsTheme()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe(theme => {
-        this.statusCards = this.statusCardsByThemes[theme.name];
-    });
+	statusCardsByThemes: {
+		default: CardSettings[];
+		cosmic: CardSettings[];
+		corporate: CardSettings[];
+		dark: CardSettings[];
+	} = {
+			default: this.commonStatusCardsSet,
+			cosmic: this.commonStatusCardsSet,
+			corporate: [
+				{
+					...this.projectsCard,
+					type: 'warning',
+				},
+				{
+					...this.usersCard,
+					type: 'primary',
+				},
+				{
+					...this.mergeRequestCard,
+					type: 'danger',
+				},
+				{
+					...this.discussionCard,
+					type: 'info',
+				},
+			],
+			dark: this.commonStatusCardsSet,
+		};
 
-    this.solarService.getSolarData()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe((data) => {
-        this.solarValue = data;
-      });
-  }
+	constructor(private themeService: NbThemeService,
+		private events: Events,
+		private solarService: SolarData) {
+		this.themeService.getJsTheme()
+			.pipe(takeWhile(() => this.alive))
+			.subscribe(theme => {
+				this.statusCards = this.statusCardsByThemes[theme.name];
+			});
 
-  ngOnInit() {
-    this.metaDataService.updateTitle('Ngx-admin IoT dashboard on Angular 9+ and Nebular.');
+		this.listenForEvents();
+		this.events.refreshProjects();
+		this.events.refreshUsers();
 
-    this.abService.onAbEvent(AbService.VARIANT_HIDE_CALL_ACTION)
-      .pipe(takeWhile(() => this.alive))
-      .subscribe(() => this.showCallAction = false );
-  }
+		this.solarService.getSolarData()
+			.pipe(takeWhile(() => this.alive))
+			.subscribe((data) => {
+				this.solarValue = data;
+			});
+	}
 
-  ngOnDestroy() {
-    this.alive = false;
-  }
+	listenForEvents() {
+
+		this.events.projects.subscribe((data: any[]) => {
+			this.projects = data;
+			this.allProjects = [];
+			let count = 0, active = 0;
+			Object.keys(data).forEach(id => {
+				this.allProjects.push(data[id]);
+				count++;
+				let date = new Date(data[id]['last_activity_at']), today = new Date();
+				if (today.getTime() - date.getTime() < 24 * 60 * 60 * 1000) { active++; }
+			});
+			this.projectsCard.title = `# ${active}`;
+			this.projectsCard.subTitle = `of ${count} projects`;
+			// sort the projects
+			this.allProjects.sort((a, b) => {
+				return new Date(b['last_activity_at']).getTime() - new Date(a['last_activity_at']).getTime();
+			});
+		});
+		this.events.users.subscribe(data => {
+			this.usersCard.title = `# ${Object.keys(data).length}`;
+		});
+
+		this.events.mergeRequests.subscribe(data => {
+			let count = 0;
+			Object.keys(data).forEach(projectId => {
+				data[projectId].forEach(mr => {
+					if(mr.state == 'opened') count++;
+				});
+			});
+			this.mergeRequestCard.title = `# ${count}`;
+		});
+		this.events.mrDiscussions.subscribe(data => {
+			let count = 0;
+			console.log(data);
+			debugger;
+			Object.keys(data).forEach(mrId => {
+				let discussions = data[mrId];
+				discussions.forEach(discussion => {
+					let counted = false, resolved = false;
+					discussion.notes.forEach(note => {
+						counted = counted || !note.system;
+						resolved = resolved || note.resolved;
+					});
+					if(counted && !resolved) count++;
+				});
+			});
+			this.discussionCard.title = `# ${count}`;
+		});
+	}
+
+	ngOnDestroy() {
+		this.alive = false;
+	}
 }

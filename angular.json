@@ -11,6 +11,12 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "optimization": false,
+            "outputHashing": "none",
+            "sourceMap": false,
+            "namedChunks": false,
+            "extractLicenses": false,
+            "buildOptimizer": false,
             "aot": true,
             "preserveSymlinks": true,
             "outputPath": "dist",
@@ -61,15 +67,15 @@
                   "maximumWarning": "6kb"
                 }
               ],
-              "optimization": true,
-              "outputHashing": "all",
+              "optimization": false,
+              "outputHashing": "none",
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
               "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
+              "extractLicenses": false,
+              "vendorChunk": true,
+              "buildOptimizer": false,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -303,5 +309,8 @@
     "@schematics/angular:directive": {
       "prefix": "ngx"
     }
+  },
+  "cli": {
+    "analytics": "f6d151a3-de54-4268-99a3-9b27375ddfdf"
   }
 }

@@ -2,11 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NbMediaBreakpointsService, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
 import { UserData } from '../../../@core/data/users';
-import { AnalyticsService, LayoutService } from '../../../@core/utils';
-import {map, takeUntil} from 'rxjs/operators';
-import { Subject, Observable } from 'rxjs';
-import { RippleService } from '../../../@core/utils/ripple.service';
-import {CurrentThemeService} from '../../../@core/utils/theme.service';
+import { LayoutService } from '../../../@core/utils';
+import { map, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+
+import { Monitor, Gitlab, User } from '../../../@data/monitor';
+import { Events } from '../../../@data/events';
 
 @Component({
   selector: 'ngx-header',
@@ -16,9 +17,7 @@ import {CurrentThemeService} from '../../../@core/utils/theme.service';
 export class HeaderComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<void> = new Subject<void>();
-  public  materialTheme$: Observable<boolean>;
   userPictureOnly: boolean = false;
-  user: any;
 
   themes = [
     {
@@ -37,43 +36,35 @@ export class HeaderComponent implements OnInit, OnDestroy {
       value: 'corporate',
       name: 'Corporate',
     },
-    {
-      value: 'material-light',
-      name: 'Material Light',
-    },
-    {
-      value: 'material-dark',
-      name: 'Material Dark',
-    },
   ];
 
   currentTheme = 'default';
+
+  gitlab: Gitlab;
+
+  user: User;
 
   userMenu = [ { title: 'Profile' }, { title: 'Log out' } ];
 
   constructor(private sidebarService: NbSidebarService,
               private menuService: NbMenuService,
               private themeService: NbThemeService,
-              private currentThemeService: CurrentThemeService,
+              public gitlabConfig: Monitor,
               private userService: UserData,
+              private events: Events,
               private layoutService: LayoutService,
-              private breakpointService: NbMediaBreakpointsService,
-              private rippleService: RippleService,
-              private analytics: AnalyticsService,
-  ) {
-    this.materialTheme$ = new Observable(subscriber => {
-      const themeName: string = this.currentThemeService.getCurrentTheme();
-
-      subscriber.next(themeName.startsWith('material'));
-    });
+              private breakpointService: NbMediaBreakpointsService) {
+                this.gitlab = gitlabConfig.getGitlabConfig();
+                this.user = gitlabConfig.getUser();
+                this.events.refreshProjects();
   }
 
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme;
 
-    this.userService.getUsers()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((users: any) => this.user = users.nick);
+    // this.userService.getUsers()
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((users: any) => this.user = users.nick);
 
     const { xl } = this.breakpointService.getBreakpointsMap();
     this.themeService.onMediaQueryChange()
@@ -88,10 +79,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         map(({ name }) => name),
         takeUntil(this.destroy$),
       )
-      .subscribe(themeName => {
-        this.currentTheme = themeName;
-        this.rippleService.toggle(themeName?.startsWith('material'));
-      });
+      .subscribe(themeName => this.currentTheme = themeName);
   }
 
   ngOnDestroy() {
@@ -100,12 +88,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   changeTheme(themeName: string) {
-    this.currentThemeService.setCurrentTheme(themeName);
     this.themeService.changeTheme(themeName);
-
-    this.materialTheme$ = new Observable(subscriber => {
-      subscriber.next(this.currentThemeService.getCurrentTheme().startsWith('material'));
-    });
   }
 
   toggleSidebar(): boolean {
@@ -118,13 +101,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navigateHome() {
     this.menuService.navigateHome();
     return false;
-  }
-
-  startSearch() {
-    this.analytics.trackEvent('startSearch');
-  }
-
-  trackEmailClick() {
-    this.analytics.trackEvent('clickContactEmail', 'click');
   }
 }

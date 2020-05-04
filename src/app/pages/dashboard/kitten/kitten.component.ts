@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, Input } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
 
 @Component({
@@ -7,6 +7,8 @@ import { NbThemeService } from '@nebular/theme';
   templateUrl: './kitten.component.html',
 })
 export class KittenComponent implements OnDestroy {
+
+  @Input() project: any;
 
   currentTheme: string;
   themeSubscription: any;
