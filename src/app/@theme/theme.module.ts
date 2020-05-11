@@ -23,11 +23,6 @@ import {
   HeaderComponent,
   SearchInputComponent,
   TinyMCEComponent,
-  CallActionCardComponent,
-  ToggleSettingsButtonComponent,
-  LayoutDirectionSwitcherComponent,
-  SwitcherComponent,
-  ThemeSettingsComponent,
 } from './components';
 import {
   CapitalizePipe,
@@ -37,9 +32,9 @@ import {
   NumberWithCommasPipe,
 } from './pipes';
 import {
-  OneColumnLayoutComponent,
-  ThreeColumnsLayoutComponent,
-  TwoColumnsLayoutComponent,
+  // OneColumnLayoutComponent,
+  // ThreeColumnsLayoutComponent,
+  // TwoColumnsLayoutComponent,
   SampleLayoutComponent,
 } from './layouts';
 import { DEFAULT_THEME } from './styles/theme.default';
@@ -69,15 +64,10 @@ const COMPONENTS = [
   FooterComponent,
   SearchInputComponent,
   TinyMCEComponent,
-  OneColumnLayoutComponent,
-  ThreeColumnsLayoutComponent,
-  TwoColumnsLayoutComponent,
-  CallActionCardComponent,
-  ToggleSettingsButtonComponent,
-  LayoutDirectionSwitcherComponent,
-  SwitcherComponent,
-  SampleLayoutComponent,
-  ThemeSettingsComponent,
+  // OneColumnLayoutComponent,
+  // ThreeColumnsLayoutComponent,
+  // TwoColumnsLayoutComponent,
+  SampleLayoutComponent
 ];
 const PIPES = [
   CapitalizePipe,
