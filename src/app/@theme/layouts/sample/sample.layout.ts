@@ -12,97 +12,20 @@ import {
 } from '@nebular/theme';
 
 import { StateService } from '../../../@core/utils';
+import { Monitor } from '../../../@data/monitor';
 
 @Component({
   selector: 'ngx-sample-layout',
   styleUrls: ['./sample.layout.scss'],
-  template: `
-    <nb-layout [center]="layout.id === 'center-column'" windowMode>
-      <nb-layout-header fixed>
-        <ngx-header></ngx-header>
-        <ngx-toggle-settings-button></ngx-toggle-settings-button>
-      </nb-layout-header>
-
-      <nb-sidebar class="menu-sidebar"
-                  tag="menu-sidebar"
-                  responsive
-                  [end]="isMenuSidebarPositionEnd()">
-        <ng-content select="nb-menu"></ng-content>
-      </nb-sidebar>
-
-      <nb-layout-column class="main-content">
-        <ng-content select="router-outlet"></ng-content>
-      </nb-layout-column>
-
-      <nb-layout-column start class="small" *ngIf="layout.id === 'two-column' || layout.id === 'three-column'">
-        <nb-menu [items]="subMenu"></nb-menu>
-      </nb-layout-column>
-
-      <nb-layout-column class="small" *ngIf="layout.id === 'three-column'">
-        <nb-menu [items]="subMenu"></nb-menu>
-      </nb-layout-column>
-
-      <nb-layout-footer fixed>
-        <ngx-footer></ngx-footer>
-      </nb-layout-footer>
-
-      <nb-sidebar class="settings-sidebar"
-                  tag="settings-sidebar"
-                  state="collapsed"
-                  fixed
-                  [end]="isSettingsSidebarPositionEnd()">
-        <ngx-theme-settings></ngx-theme-settings>
-      </nb-sidebar>
-    </nb-layout>
-  `,
+  templateUrl: './sample.layout.html'
 })
 export class SampleLayoutComponent implements OnInit, OnDestroy {
 
   protected destroy$ = new Subject<void>();
 
-  subMenu: NbMenuItem[] = [
-    {
-      title: 'PAGE LEVEL MENU',
-      group: true,
-    },
-    {
-      title: 'Buttons',
-      icon: 'ion ion-android-radio-button-off',
-      link: '/pages/ui-features/buttons',
-    },
-    {
-      title: 'Grid',
-      icon: 'ion ion-android-radio-button-off',
-      link: '/pages/ui-features/grid',
-    },
-    {
-      title: 'Icons',
-      icon: 'ion ion-android-radio-button-off',
-      link: '/pages/ui-features/icons',
-    },
-    {
-      title: 'Modals',
-      icon: 'ion ion-android-radio-button-off',
-      link: '/pages/ui-features/modals',
-    },
-    {
-      title: 'Typography',
-      icon: 'ion ion-android-radio-button-off',
-      link: '/pages/ui-features/typography',
-    },
-    {
-      title: 'Animated Searches',
-      icon: 'ion ion-android-radio-button-off',
-      link: '/pages/ui-features/search-fields',
-    },
-    {
-      title: 'Tabs',
-      icon: 'ion ion-android-radio-button-off',
-      link: '/pages/ui-features/tabs',
-    },
-  ];
   layout: any = {};
   sidebar: any = {};
+  isLoggedIn: boolean;
 
   currentTheme: string;
 
@@ -111,20 +34,14 @@ export class SampleLayoutComponent implements OnInit, OnDestroy {
   constructor(protected stateService: StateService,
               protected menuService: NbMenuService,
               protected themeService: NbThemeService,
+              protected monitor: Monitor,
               protected bpService: NbMediaBreakpointsService,
               protected sidebarService: NbSidebarService,
               @Inject(PLATFORM_ID) protected platformId,
   ) {}
 
   ngOnInit() {
-    this.stateService.onLayoutState()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(layout => this.layout = layout);
-
-    this.stateService.onSidebarState()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(sidebar => this.sidebar = sidebar);
-
+    this.isLoggedIn = this.monitor.isLoggedIn();
     const isBp = this.bpService.getByName('is');
     this.menuService.onItemSelect()
       .pipe(

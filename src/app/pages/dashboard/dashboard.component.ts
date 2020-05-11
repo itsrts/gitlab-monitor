@@ -4,6 +4,9 @@ import { takeWhile } from 'rxjs/operators';
 import { SolarData } from '../../@core/data/solar';
 import { Events } from '../../@data/events';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
+import { Router } from '@angular/router';
+import { Monitor, Gitlab, User } from '../../@data/monitor';
+
 
 interface CardSettings {
 	title: string;
@@ -91,6 +94,8 @@ export class DashboardComponent implements OnDestroy {
 
 	constructor(private themeService: NbThemeService,
 		private events: Events,
+		private router: Router,
+		private monitor: Monitor,
 		private solarService: SolarData) {
 		this.themeService.getJsTheme()
 			.pipe(takeWhile(() => this.alive))
@@ -107,6 +112,14 @@ export class DashboardComponent implements OnDestroy {
 			.subscribe((data) => {
 				this.solarValue = data;
 			});
+	}
+
+	ngOnInit() {
+		console.log("ok");
+		const user = this.monitor.getUser();
+		if(!user.auth_code) {
+			// this.router.navigate(['/login']);
+		}
 	}
 
 	listenForEvents() {

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LocalStorageService } from './storage';
 
 export interface Gitlab {
     name: String;
@@ -24,10 +25,10 @@ export class Monitor {
     gitlab: Gitlab;
     user: User;
 
-    constructor() {
+    constructor(private localStorage: LocalStorageService) {
         this.gitlab = {
-            url: '',
-            name: ''
+            url: 'https://motorcode.concirrusquest.com',
+            name: 'QuestAutomotive'
         };
         this.user = {
             "id": 0,
@@ -47,6 +48,14 @@ export class Monitor {
 
     public getUser(): User {
         return this.user;
+    }
+
+    public isLoggedIn(): boolean {
+        return this.getUser().auth_code.length > 0;
+    }
+
+    public save() {
+        this.localStorage.storeOnLocalStorage("gitlab", this.gitlab);
     }
 
 }

@@ -1,0 +1,22 @@
+:host ::ng-deep nb-stepper .step-content {
+  text-align: center;
+
+  button {
+    cursor: pointer;
+    margin: 0.5rem;
+  }
+}
+
+.center {
+  display: flex;  
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+}
+
+.steppers-container {
+  display: flex;  
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+}

@@ -7,6 +7,7 @@ import {
   NbUserModule,
   NbRadioModule,
   NbSelectModule,
+  NbStepperModule,
   NbListModule,
   NbIconModule,
 } from '@nebular/theme';
@@ -29,11 +30,17 @@ import { SolarComponent } from './solar/solar.component';
 import { PlayerComponent } from './rooms/player/player.component';
 import { TrafficComponent } from './traffic/traffic.component';
 import { TrafficChartComponent } from './traffic/traffic-chart.component';
-import { FormsModule } from '@angular/forms';
+import { RegisterComponent } from './register/register.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { StorageServiceModule } from 'ngx-webstorage-service';
+
 
 @NgModule({
   imports: [
+    NbStepperModule,
+    StorageServiceModule,
     FormsModule,
+    ReactiveFormsModule,
     ThemeModule,
     NbCardModule,
     NbUserModule,
@@ -64,6 +71,7 @@ import { FormsModule } from '@angular/forms';
     SolarComponent,
     TrafficComponent,
     TrafficChartComponent,
+    RegisterComponent
   ],
 })
 export class DashboardModule { }

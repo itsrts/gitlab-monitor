@@ -1,0 +1,117 @@
+
+<div class="steppers-container row">
+  <div class="col-md-12 col-lg-6 col-xxxl-6">
+    <nb-card>
+      <nb-card-body>
+        <h3 style="text-align: center; padding: 50px;">I'm Gitlab-Monitor</h3>
+        <nb-stepper #stepper>
+          <nb-step [stepControl]="firstForm" label="# Name">
+            <form [formGroup]="firstForm" (ngSubmit)="onFirstSubmit()" class="step-container">
+              <p class="lorem">
+                Please enter the name of your organization or company or simply what would you like to call me.
+              </p>
+              <div class="input-group">
+                <input type="text" [(ngModel)]="gitlab.name" placeholder="Organization or Company name" class="form-control" formControlName="firstCtrl"
+                       [ngClass]="{'form-control-danger': firstForm.invalid && (firstForm.dirty || firstForm.touched)}">
+              </div>
+              <button nbButton nbStepperNext>cool</button>
+            </form>
+          </nb-step>
+          <nb-step [stepControl]="secondForm" label="# Reach">
+            <form [formGroup]="secondForm" (ngSubmit)="onSecondSubmit()" class="step-container">
+              <p class="lorem">
+                This is important..!!
+                What is the URL for your gitlab solutions, it can surely be https://gitlab.com 
+                But you might have a self-hosted gitlab, please be certain of this URL.
+              </p>
+              <div class="input-group">
+                <input type="text" [(ngModel)]="gitlab.url" placeholder="https://your-self-hosted-gitlab.domain" class="form-control" formControlName="secondCtrl"
+                       [ngClass]="{'form-control-danger': secondForm.invalid && (secondForm.dirty || secondForm.touched)}">
+              </div>
+              <!-- <button nbButton nbStepperPrevious>prev</button> -->
+              <button nbButton nbStepperNext>next</button>
+            </form>
+          </nb-step>
+          <nb-step [stepControl]="thirdForm" label="# Access">
+            <form [formGroup]="thirdForm" (ngSubmit)="onThirdSubmit()" class="step-container">
+              <p class="lorem">
+                To access the project and provide you with the details, I would need access. <br />
+                Trust me, you can always check the network logs. I'm quarantined from rest of the world.
+              </p>
+              <div class="input-group center">
+                <!-- Gitlab-Personal-Access-Token -->
+                <input type="text" placeholder="Enter personal access token" class="form-control" formControlName="thirdCtrl"
+                       [ngClass]="{'form-control-danger': thirdForm.invalid && (thirdForm.dirty || thirdForm.touched)}">
+                <button nbButton nbStepperNext>Confirm</button>
+              </div>
+              <h3>OR</h3>
+              <button nbButton (click)="oAuthLogin()" status="warning">OAuth Login</button>
+            </form>
+          </nb-step>
+          <nb-step [stepControl]="thirdForm" [hidden]="true" label="Third step">
+            <div class="step-container">
+              <h3>All is set..!!</h3>
+              <button nbButton (click)="goNow()" status="danger">GO NOW</button>
+            </div>
+          </nb-step>
+        </nb-stepper>
+      </nb-card-body>
+    </nb-card>
+  </div>
+
+  <!-- <div class="col-md-12 col-lg-6 col-xxxl-6">
+    <nb-card size="medium">
+      <nb-card-body>
+        <nb-stepper orientation="vertical">
+          <nb-step label="First step">
+            <h3>Step content #1</h3>
+            <p class="lorem">
+              Proin varius accumsan semper. Praesent consequat tincidunt sagittis. Curabitur egestas sem a ipsum bibendum,
+              sit amet fringilla orci efficitur. Nam bibendum lectus ut viverra tristique. Fusce eu pulvinar magna, quis
+              viverra ex. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent metus turpis, commodo vel
+              placerat quis, lobortis in ligula.
+            </p>
+            <button nbButton disabled nbStepperNext>prev</button>
+            <button nbButton nbStepperNext>next</button>
+          </nb-step>
+          <nb-step label="Second step">
+            <h3>Step content #2</h3>
+            <p class="lorem">
+              Curabitur luctus mattis risus nec condimentum. Donec at dui turpis. Sed vehicula fringilla rutrum. Nullam
+              sed ornare magna. Mauris vitae laoreet diam. Mauris fermentum ligula at lacinia semper. Nulla placerat dui
+              eu sapien pellentesque, eu placerat leo luctus. Cras pharetra blandit fermentum.
+            </p>
+            <button nbButton nbStepperPrevious>prev</button>
+            <button nbButton nbStepperNext>next</button>
+          </nb-step>
+          <nb-step label="Third step">
+            <h3>Step content #3</h3>
+            <p class="lorem">
+              Proin varius accumsan semper. Praesent consequat tincidunt sagittis. Curabitur egestas sem a ipsum bibendum,
+              sit amet fringilla orci efficitur. Nam bibendum lectus ut viverra tristique. Fusce eu pulvinar magna, quis
+              viverra ex. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent metus turpis, commodo vel
+              placerat quis, lobortis in ligula.
+            </p>
+            <p class="lorem">
+              Curabitur luctus mattis risus nec condimentum. Donec at dui turpis. Sed vehicula fringilla rutrum. Nullam
+              sed ornare magna. Mauris vitae laoreet diam. Mauris fermentum ligula at lacinia semper. Nulla placerat dui
+              eu sapien pellentesque, eu placerat leo luctus. Cras pharetra blandit fermentum.
+            </p>
+            <button nbButton nbStepperPrevious>prev</button>
+            <button nbButton nbStepperNext>next</button>
+          </nb-step>
+          <nb-step label="Fourth step">
+            <h3>Step content #4</h3>
+            <p class="lorem">
+              Proin varius accumsan semper. Praesent consequat tincidunt sagittis. Curabitur egestas sem a ipsum bibendum,
+              sit amet fringilla orci efficitur. Nam bibendum lectus ut viverra tristique. Fusce eu pulvinar magna, quis
+              viverra ex.
+            </p>
+            <button nbButton nbStepperPrevious>prev</button>
+            <button nbButton disabled nbStepperNext>next</button>
+          </nb-step>
+        </nb-stepper>
+      </nb-card-body>
+    </nb-card>
+  </div> -->
+</div>
