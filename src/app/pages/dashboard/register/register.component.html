@@ -40,12 +40,24 @@
               </p>
               <div class="input-group center">
                 <!-- Gitlab-Personal-Access-Token -->
-                <input type="text" placeholder="Enter personal access token" class="form-control" formControlName="thirdCtrl"
+                <input type="text" [(ngModel)]="token" placeholder="Enter personal access token" class="form-control" formControlName="thirdCtrl"
                        [ngClass]="{'form-control-danger': thirdForm.invalid && (thirdForm.dirty || thirdForm.touched)}">
-                <button nbButton nbStepperNext status="danger">Confirm</button>
+                <button nbButton (click)="authenticateUser()" status="danger">Confirm</button>
               </div>
-              <!-- <h3>OR</h3> -->
-              <!-- <button nbButton (click)="oAuthLogin()" status="warning">OAuth Login</button> -->
+              <h3>OR</h3>
+              <p class="lorem">
+                Go for O-Auth login but you would need to create a new application and provide the Client-Id and Client-Secret.<br />
+                Please whitelist <b style="color: black;">{{redirectUri}}</b> in the application.
+              </p>
+              <div class="m-4">
+                <input type="text" [(ngModel)]="application.clientId" placeholder="Enter Client-Id / Application-Id" class="form-control" formControlName="thirdCtrl1"
+                [ngClass]="{'form-control-danger': secondForm.invalid && (secondForm.dirty || secondForm.touched)}">
+              </div>
+
+              <div class="m-4">
+              <input type="text" [(ngModel)]="application.clientSecret" placeholder="Enter Client-Secret / Application-Secret" class="form-control" formControlName="thirdCtrl2">
+              </div>
+              <button nbButton (click)="oAuthLogin()" status="warning">OAuth Login</button>
             </form>
           </nb-step>
           <nb-step [stepControl]="thirdForm" [hidden]="true" label="Third step">

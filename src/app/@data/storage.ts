@@ -18,4 +18,9 @@ export class LocalStorageService {
         this.storage.set(key, obj);
         console.log(this.storage.get(key) || 'Local storage is empty');
     }
+
+
+    public getFromLocalStorage(key: string) {
+        return this.storage.get(key) || undefined;
+    }
 }

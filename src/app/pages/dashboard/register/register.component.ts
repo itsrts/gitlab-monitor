@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Monitor, Gitlab } from '../../../@data/monitor';
-import { Router } from '@angular/router';
-
-const clientSecret = '5989a393cec762bb7b505b08dc1b1f98b70cda4b97c7c2c2bb3c203023460986';
-const clientId = 'e81bcadb8e976f6d22f89edd2da3a293bd868abea5864864b905b409a0ce7f40';
+import { Monitor, Gitlab, Application, User } from '../../../@data/monitor';
+import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Server } from '../../../@data/server';
 
 @Component({
   selector: 'ngx-register',
@@ -17,12 +16,18 @@ export class RegisterComponent implements OnInit {
   secondForm: FormGroup;
   thirdForm: FormGroup;
   gitlab: Gitlab;
+  application: Application;
+  redirectUri: string;
+  token: string;
 
-  constructor(private fb: FormBuilder, private router:Router, private monitor: Monitor) {
+  constructor(private fb: FormBuilder, private router:Router, private monitor: Monitor, 
+    private http: HttpClient, private route: ActivatedRoute, private server: Server) {
   }
 
   ngOnInit() {
     this.gitlab = this.monitor.getGitlabConfig();
+    this.application = this.monitor.getApplication();
+    this.redirectUri = `${window.location.protocol}//${window.location.host}/register`;
     this.firstForm = this.fb.group({
       firstCtrl: ['', Validators.required],
     });
@@ -33,6 +38,26 @@ export class RegisterComponent implements OnInit {
 
     this.thirdForm = this.fb.group({
       thirdCtrl: ['', Validators.required],
+      thirdCtrl1: ['', Validators.required],
+      thirdCtrl2: ['', Validators.required],
+    });
+
+    if(this.monitor.isValidApplication()) {
+      let code = this.route.snapshot.queryParamMap.get('code');
+      let url = `${this.gitlab.url}/oauth/token?client_id=${this.application.clientId}&client_secret=${this.application.clientSecret}&grant_type=authorization_code&redirect_uri=${this.redirectUri}&code=${code}`;
+      // TODO : CORS issue
+      this.http.post(url, {}).subscribe(data => {
+        console.log(data);
+      });
+    }
+  }
+
+  authenticateUser() {
+    this.server.getAuthenticatedUser(this.token).subscribe((user: User) => {
+      this.monitor.user = user;
+      this.monitor.user.private_token = this.token;
+      this.monitor.save();
+      this.goNow();
     });
   }
 
@@ -41,8 +66,8 @@ export class RegisterComponent implements OnInit {
   }
 
   oAuthLogin() {
-    let url = `${this.gitlab.url}/oauth/authorize?client_id=${clientId}&redirect_uri=http://localhost:4200/pages/register&response_type=code&state=123&scope=read_user+api+read_repository+openid+profile+email`;
-    // https://motorcode.concirrusquest.com/oauth/authorize?client_id=584b597b46293f87d4e939f8031b1bbc38b29ca84f55c31f761e90ffcd7704b7&redirect_uri=http://localhost:4200/ok&response_type=code&state=123&scope=read_user+api+read_repository+write_repository+openid+profile+email
+    let url = `${this.gitlab.url}/oauth/authorize?client_id=${this.application.clientId}&redirect_uri=${this.redirectUri}&response_type=code&state=123&scope=read_user+api+read_repository+openid+profile+email`;
+    // this.monitor.save();
     window.location.href = url;
   }
 

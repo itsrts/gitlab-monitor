@@ -2,19 +2,24 @@ import { Injectable } from '@angular/core';
 import { LocalStorageService } from './storage';
 
 export interface Gitlab {
-    name: String;
-    url: String;
+    name: string;
+    url: string;
+}
+
+export interface Application {
+    clientId: string;
+    clientSecret: string;
 }
 
 export interface User {
     id: Number;
-    name: String;
-    username: String;
-    avatar_url: String;
-    web_url: String;
-    state: String;
-    private_token: String;
-    auth_code: String;
+    name: string;
+    username: string;
+    avatar_url: string;
+    web_url: string;
+    state: string;
+    private_token: string;
+    auth_code: string;
 }
 
 @Injectable({
@@ -23,12 +28,17 @@ export interface User {
 export class Monitor {
 
     gitlab: Gitlab;
+    application: Application;
     user: User;
 
     constructor(private localStorage: LocalStorageService) {
         this.gitlab = {
-            url: 'https://motorcode.concirrusquest.com',
-            name: 'QuestAutomotive'
+            name: '',
+            url: ''
+        };
+        this.application = {
+            clientId: '',
+            clientSecret: ''
         };
         this.user = {
             "id": 0,
@@ -46,16 +56,29 @@ export class Monitor {
         return this.gitlab;
     }
 
+    public getApplication(): Application {
+        return this.application;
+    }
+
     public getUser(): User {
         return this.user;
     }
 
     public isLoggedIn(): boolean {
-        return this.getUser().auth_code.length > 0;
+        return this.getUser().private_token.length > 0 ||
+            this.getUser().auth_code.length > 0;
     }
+
+    public isValidApplication(): boolean {
+        return this.application.clientSecret.length > 0 &&
+            this.application.clientId.length > 0;
+    }
+
 
     public save() {
         this.localStorage.storeOnLocalStorage("gitlab", this.gitlab);
+        this.localStorage.storeOnLocalStorage("application", this.application);
+        this.localStorage.storeOnLocalStorage("user", this.user);
     }
 
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 
 import { Gitlab, User, Monitor } from "./monitor";
@@ -9,22 +9,27 @@ import { Gitlab, User, Monitor } from "./monitor";
 })
 export class Server {
 
-    user: User;
     gitlab: Gitlab;
 
     constructor(
         private monitor: Monitor,
         private http: HttpClient) {
-        this.user = monitor.getUser();
         this.gitlab = monitor.getGitlabConfig();
     }
 
     getApiOpts() {
+        let headers  = new HttpHeaders({ 'Private-Token' : this.monitor.getUser().private_token });
         return {
-            headers: {
-                Authorization: `Bearer ${this.user.auth_code}`
-            }
+            headers: headers
         };
+    }
+
+    getAuthenticatedUser(token) {
+        let headers  = new HttpHeaders({ 'Private-Token' : token });
+        let url = `${this.gitlab.url}/api/v4/user`;
+        return this.http.get(url, {
+            headers: headers
+        });
     }
 
     getProjects(page) {
