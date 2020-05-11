@@ -12,15 +12,10 @@ import {ThemeGuard} from './@core/guard/theme.guard';
 
 export const routes: Routes = [
   {
-    path: 'pages',
+    path: '',
     canActivate: [ThemeGuard],
     loadChildren: () => import('./pages/pages.module')
       .then(m => m.PagesModule),
-  },
-  {
-    path: 'themes',
-    loadChildren: () => import('app/themes-screen/starter.module')
-      .then(m => m.StarterModule),
   },
   {
     path: 'auth',
@@ -53,8 +48,8 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '', redirectTo: 'pages/dashboard', pathMatch: 'full' },
-  { path: '**', redirectTo: 'pages/dashboard' },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '**', redirectTo: '/dashboard' },
 ];
 
 const config: ExtraOptions = {
