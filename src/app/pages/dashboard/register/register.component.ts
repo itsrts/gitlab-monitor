@@ -25,6 +25,11 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit() {
+		console.log("ok");
+		if(this.monitor.isLoggedIn()) {
+      this.goNow();
+      return;
+		}
     this.gitlab = this.monitor.getGitlabConfig();
     this.application = this.monitor.getApplication();
     this.redirectUri = `${window.location.protocol}//${window.location.host}/register`;
@@ -62,7 +67,9 @@ export class RegisterComponent implements OnInit {
   }
 
   goNow() {
-    this.router.navigate(['/']);
+    console.log("user is logged in");
+    const redirectUri = `${window.location.protocol}//${window.location.host}/`;
+    window.location.href = redirectUri;
   }
 
   oAuthLogin() {

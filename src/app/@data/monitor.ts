@@ -32,15 +32,15 @@ export class Monitor {
     user: User;
 
     constructor(private localStorage: LocalStorageService) {
-        this.gitlab = {
+        this.gitlab = localStorage.getFromLocalStorage('gitlab') || {
             name: '',
             url: ''
         };
-        this.application = {
+        this.application = localStorage.getFromLocalStorage('application') || {
             clientId: '',
             clientSecret: ''
         };
-        this.user = {
+        this.user = localStorage.getFromLocalStorage('user') || {
             "id": 0,
             "name": "",
             "username": "",
@@ -64,9 +64,15 @@ export class Monitor {
         return this.user;
     }
 
+    public logout() {
+        this.localStorage.deleteFromLocalStorage('gitlab');
+        this.localStorage.deleteFromLocalStorage('application');
+        this.localStorage.deleteFromLocalStorage('user');
+    }
+
     public isLoggedIn(): boolean {
-        return this.getUser().private_token.length > 0 ||
-            this.getUser().auth_code.length > 0;
+        return this.user.private_token.length > 0 ||
+            this.user.auth_code.length > 0;
     }
 
     public isValidApplication(): boolean {

@@ -103,9 +103,6 @@ export class DashboardComponent implements OnDestroy {
 				this.statusCards = this.statusCardsByThemes[theme.name];
 			});
 
-		this.listenForEvents();
-		this.events.refreshProjects();
-		this.events.refreshUsers();
 
 		this.solarService.getSolarData()
 			.pipe(takeWhile(() => this.alive))
@@ -116,9 +113,12 @@ export class DashboardComponent implements OnDestroy {
 
 	ngOnInit() {
 		console.log("ok");
-		const user = this.monitor.getUser();
-		if(!user.auth_code) {
-			// this.router.navigate(['/login']);
+		if (!this.monitor.isLoggedIn()) {
+			this.router.navigate(['/login']);
+		} else {
+			this.listenForEvents();
+			this.events.refreshProjects();
+			this.events.refreshUsers();
 		}
 	}
 
@@ -149,7 +149,7 @@ export class DashboardComponent implements OnDestroy {
 			let count = 0;
 			Object.keys(data).forEach(projectId => {
 				data[projectId].forEach(mr => {
-					if(mr.state == 'opened') count++;
+					if (mr.state == 'opened') count++;
 				});
 			});
 			this.mergeRequestCard.title = `# ${count}`;
@@ -166,7 +166,7 @@ export class DashboardComponent implements OnDestroy {
 						counted = counted || !note.system;
 						resolved = resolved || note.resolved;
 					});
-					if(counted && !resolved) count++;
+					if (counted && !resolved) count++;
 				});
 			});
 			this.discussionCard.title = `# ${count}`;

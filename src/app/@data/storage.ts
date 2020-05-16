@@ -19,6 +19,9 @@ export class LocalStorageService {
         console.log(this.storage.get(key) || 'Local storage is empty');
     }
 
+    public deleteFromLocalStorage(key: string) {
+        this.storage.remove(key);
+    }
 
     public getFromLocalStorage(key: string) {
         return this.storage.get(key) || undefined;

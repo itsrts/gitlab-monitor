@@ -44,13 +44,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   user: User;
 
-  userMenu = [ { title: 'Profile' }, { title: 'Log out' } ];
+  userMenu = [ { title: 'Profile', data: 'users-profile' }, { title: 'Log out', data: 'logout' } ];
 
   constructor(private sidebarService: NbSidebarService,
               private menuService: NbMenuService,
               private themeService: NbThemeService,
-              public gitlabConfig: Monitor,
-              private userService: UserData,
+              private gitlabConfig: Monitor,
               private events: Events,
               private layoutService: LayoutService,
               private breakpointService: NbMediaBreakpointsService) {
@@ -61,6 +60,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme;
+
+    this.menuService.onItemClick().subscribe(event => {
+      switch(event.item.data) {
+        case 'logout': 
+          this.gitlabConfig.logout();
+          console.log("user is logged out");
+          const redirectUri = `${window.location.protocol}//${window.location.host}/`;
+          window.location.href = redirectUri;
+      }
+    });
 
     // this.userService.getUsers()
     //   .pipe(takeUntil(this.destroy$))
