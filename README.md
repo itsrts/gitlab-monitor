@@ -30,3 +30,10 @@ Which probably you will never see, we are working on it
 - Login via o-Auth
 - Last pipeline and job for a project
 - List of open MRs
+
+# Relevant files/directories
+- src/app/@data/*
+- src/app/pages/dashboard/register/*
+- src/app/pages/dashboard/dashboard.*
+- src/app/@theme/header/*
+- src/app/@theme/layout/*
